@@ -87,10 +87,6 @@ class CameraApp(QMainWindow):
         self.detection_frame = None
         self.detection_result_list = []
 
-        # Add a frame skipping mechanism
-        self.frame_skip_count = 0
-        self.frame_skip_interval = 3  # Process every 3rd frame
-
         # Open the camera
         self.cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")  # Replace with your camera source (e.g., RTSP URL)
         if not self.cap.isOpened():
@@ -119,7 +115,7 @@ class CameraApp(QMainWindow):
         self.camera_restart_interval = timedelta(minutes=3)
         self.last_restart_time = datetime.now()
 
-        self.timer.start(50)  # Update every 30 ms
+        self.timer.start(30)  # Update every 30 ms
 
     def populate_table_with_random_data(self):
         """Populate the table with random data."""
@@ -134,10 +130,6 @@ class CameraApp(QMainWindow):
         print("Button 2 Pressed")
 
     def update_frame(self):
-        self.frame_skip_count += 1
-        if self.frame_skip_count < self.frame_skip_interval:
-            return  # Skip this frame
-        self.frame_skip_count = 0  # Reset the counter
         current_time = datetime.now()
     
         # Check if it's time to restart the camera

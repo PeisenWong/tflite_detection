@@ -22,6 +22,7 @@ import mediapipe as mp
 
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+from datetime import datetime, timedelta
 
 from utils import visualize
 
@@ -44,9 +45,10 @@ def run(model: str, max_results: int, score_threshold: float,
   """
 
   # Start capturing video input from the camera
-  cap = cv2.VideoCapture(0)
+  cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")
   cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
   cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+  cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
   # Visualization parameters
   row_size = 50  # pixels
@@ -77,10 +79,24 @@ def run(model: str, max_results: int, score_threshold: float,
                                          max_results=max_results, score_threshold=score_threshold,
                                          result_callback=save_result)
   detector = vision.ObjectDetector.create_from_options(options)
-
+  
+  camera_restart_interval = timedelta(minutes=3)
+  last_restart_time = datetime.now()
 
   # Continuously capture images from the camera and run inference
   while cap.isOpened():
+    current_time = datetime.now()
+    
+    # Check if it's time to restart the camera
+    if current_time - last_restart_time > camera_restart_interval:
+        print("Restarting the camera...")
+        cap.release()
+        cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        last_restart_time = current_time
+    
     success, image = cap.read()
     image=cv2.resize(image,(640,480))
     if not success:
@@ -129,8 +145,8 @@ def main():
       '--model',
       help='Path of the object detection model.',
       required=False,
-#      default='efficientdet_lite0.tflite')
-      default='best.tflite')
+      default='efficientdet_lite0.tflite')
+#      default='best.tflite')
   parser.add_argument(
       '--maxResults',
       help='Max number of detection results.',

@@ -159,7 +159,7 @@ class CameraApp(QMainWindow):
                 'ERROR: Unable to read from webcam. Please verify your webcam settings.'
             )
 
-        image = cv2.flip(image, 1)
+        # image = cv2.flip(image, 1)
 
         # Convert the image from BGR to RGB as required by the TFLite model.
         rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

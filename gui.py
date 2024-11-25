@@ -75,14 +75,14 @@ class CameraApp(QMainWindow):
         self.timer.timeout.connect(self.update_frame)
 
         # Visualization parameters
-        row_size = 50  # pixels
-        left_margin = 24  # pixels
-        text_color = (0, 0, 0)  # black
-        font_size = 1
-        font_thickness = 1
+        self.row_size = 50  # pixels
+        self.left_margin = 24  # pixels
+        self.text_color = (0, 0, 0)  # black
+        self.font_size = 1
+        self.font_thickness = 1
         fps_avg_frame_count = 10
 
-        detection_frame = None
+        self.detection_frame = None
         detection_result_list = []
 
         # Open the camera
@@ -108,10 +108,10 @@ class CameraApp(QMainWindow):
                                                 running_mode=vision.RunningMode.LIVE_STREAM,
                                                 max_results=max_results, score_threshold=score_threshold,
                                                 result_callback=save_result)
-        detector = vision.ObjectDetector.create_from_options(options)
+        self.detector = vision.ObjectDetector.create_from_options(options)
 
-        camera_restart_interval = timedelta(minutes=3)
-        last_restart_time = datetime.now()
+        self.camera_restart_interval = timedelta(minutes=3)
+        self.last_restart_time = datetime.now()
 
         self.timer.start(30)  # Update every 30 ms
 
@@ -143,16 +143,16 @@ class CameraApp(QMainWindow):
         current_time = datetime.now()
     
         # Check if it's time to restart the camera
-        if current_time - last_restart_time > self.camera_restart_interval:
+        if current_time - self.last_restart_time > self.camera_restart_interval:
             print("Restarting the camera...")
-            cap.release()
-            cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-            last_restart_time = current_time
+            self.cap.release()
+            self.cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+            self.last_restart_time = current_time
         
-        success, image = cap.read()
+        success, image = self.cap.read()
         image=cv2.resize(image,(640,480))
         if not success:
             sys.exit(
@@ -179,10 +179,15 @@ class CameraApp(QMainWindow):
             # print(detection_result_list)
             current_frame = visualize(current_frame, self.detection_result_list[0])
             detection_frame = current_frame
-            self.button1_callbackdetection_result_list.clear()
+            self.detection_result_list.clear()
 
         if detection_frame is not None:
             cv2.imshow('object_detection', detection_frame)
+        
+        # Convert frame to QPixmap and display it
+        qt_image = QImage(detection_frame.data, detection_frame.shape[1], detection_frame.shape[0],
+                          detection_frame.strides[0], QImage.Format_RGB888)
+        self.camera_label.setPixmap(QPixmap.fromImage(qt_image))
 
 
 if __name__ == "__main__":

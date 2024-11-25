@@ -113,7 +113,7 @@ class CameraApp(QMainWindow):
         self.camera_restart_interval = timedelta(minutes=3)
         self.last_restart_time = datetime.now()
 
-        self.timer.start(30)  # Update every 30 ms
+        self.timer.start(10)  # Update every 30 ms
 
     def populate_table_with_random_data(self):
         """Populate the table with random data."""
@@ -182,9 +182,12 @@ class CameraApp(QMainWindow):
             detection_frame = visualize(current_frame, self.detection_result_list[0])
             self.detection_result_list.clear()
         
-        # Convert frame to QPixmap and display it
-        qt_image = QImage(detection_frame.data, detection_frame.shape[1], detection_frame.shape[0],
-                          detection_frame.strides[0], QImage.Format_RGB888)
+        # Convert the BGR frame to QImage directly
+        height, width, channel = detection_frame.shape
+        bytes_per_line = channel * width
+        qt_image = QImage(detection_frame.data, width, height, bytes_per_line, QImage.Format_BGR888)
+
+        # Update the QLabel with the QImage
         self.camera_label.setPixmap(QPixmap.fromImage(qt_image))
 
 

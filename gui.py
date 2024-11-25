@@ -70,7 +70,7 @@ class CameraApp(QMainWindow):
 
     def start_camera(self):
         # Open the camera
-        self.cap = cv2.VideoCapture(0)  # Replace with your camera source (e.g., RTSP URL)
+        self.cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")  # Replace with your camera source (e.g., RTSP URL)
         if not self.cap.isOpened():
             self.camera_label.setText("Failed to access camera!")
             return

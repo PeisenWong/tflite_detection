@@ -27,6 +27,8 @@ class CameraApp(QMainWindow):
 
         self.setWindowTitle("Responsive GUI with Camera and Table")
         self.setGeometry(100, 100, 1200, 800)
+        self.height = height
+        self.width = width
 
         # Main layout
         main_layout = QHBoxLayout()

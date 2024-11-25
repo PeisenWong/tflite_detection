@@ -83,7 +83,7 @@ class CameraApp(QMainWindow):
         fps_avg_frame_count = 10
 
         self.detection_frame = None
-        detection_result_list = []
+        self.detection_result_list = []
 
         # Open the camera
         self.cap = cv2.VideoCapture("rtsp://peisen:peisen@192.168.113.39:554/stream2")  # Replace with your camera source (e.g., RTSP URL)
@@ -99,7 +99,7 @@ class CameraApp(QMainWindow):
                 FPS = fps_avg_frame_count / (time.time() - START_TIME)
                 START_TIME = time.time()
 
-            detection_result_list.append(result)
+            self.detection_result_list.append(result)
             COUNTER += 1
     
         # Initialize the object detection model

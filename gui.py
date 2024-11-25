@@ -175,14 +175,12 @@ class CameraApp(QMainWindow):
         cv2.putText(current_frame, fps_text, text_location, cv2.FONT_HERSHEY_DUPLEX,
                     self.font_size, self.text_color, self.font_thickness, cv2.LINE_AA)
 
+        # Initialize detection_frame with the current image
+        detection_frame = image.copy()
         if self.detection_result_list:
             # print(detection_result_list)
-            current_frame = visualize(current_frame, self.detection_result_list[0])
-            detection_frame = current_frame
+            detection_frame = visualize(current_frame, self.detection_result_list[0])
             self.detection_result_list.clear()
-
-        if detection_frame is not None:
-            cv2.imshow('object_detection', detection_frame)
         
         # Convert frame to QPixmap and display it
         qt_image = QImage(detection_frame.data, detection_frame.shape[1], detection_frame.shape[0],

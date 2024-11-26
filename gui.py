@@ -112,7 +112,7 @@ class CameraApp(QMainWindow):
                                                 result_callback=save_result)
         self.detector = vision.ObjectDetector.create_from_options(options)
 
-        self.camera_restart_interval = timedelta(minutes=3)
+        self.camera_restart_interval = timedelta(minutes=1)
         self.last_restart_time = datetime.now()
 
         self.timer.start(30)  # Update every 30 ms
